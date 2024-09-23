@@ -1,0 +1,10 @@
+manifest_version = 1
+
+[module]
+name = "TestFlight Notifier"
+id = "testflight_notifier"
+description = "Notifies you when an apple TestFlight spot becomes open"
+version = "1.0.0"
+license = "GNU GPLv3"
+authors = ["Fripe"]
+requirements = ["beautifulsoup4"]
