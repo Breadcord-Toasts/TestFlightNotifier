@@ -1,5 +1,5 @@
 # How often the bot should check each testflight app, in hours
-check_interval = 1
+check_interval = 1.0
 
 watched_apps = []
 notification_channel_id = 0
