@@ -192,7 +192,8 @@ class TestFlightNotifier(HTTPModuleCog):
 
     @commands.command()
     @commands.is_owner()
-    async def set_testflight_channel(self, ctx: commands.Context, channel: discord.TextChannel):
+    async def set_testflight_channel(self, ctx: commands.Context, channel_id: int):
+        channel = await self.bot.fetch_channel(channel_id)
         self.settings.notification_channel_id.value = channel.id
         await ctx.send(f"Notification channel set to {channel.mention}")
 
