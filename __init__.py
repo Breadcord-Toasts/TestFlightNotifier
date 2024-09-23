@@ -9,6 +9,11 @@ from discord.ext import tasks, commands
 import breadcord
 from breadcord.helpers import HTTPModuleCog
 
+HEADERS = {
+    "Accept": "text/html",
+    "Accept-Language": "en-US,en",
+}
+
 
 @dataclass
 class TestFlightApp:
@@ -89,6 +94,7 @@ class TestFlightNotifier(HTTPModuleCog):
     async def fetch_app_info(self, app_id: str) -> TestFlightApp | None:
         async with self.session.get(
             f"https://testflight.apple.com/join/{app_id}",
+            headers=HEADERS,
         ) as resp:
             if resp.status != 200:
                 return None
