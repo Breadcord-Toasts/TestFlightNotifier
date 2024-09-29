@@ -1,6 +1,7 @@
 import sqlite3
 from asyncio import tasks
 from dataclasses import dataclass
+from typing import cast
 
 import discord
 from bs4 import BeautifulSoup
@@ -61,12 +62,14 @@ class TestFlightNotifier(HTTPModuleCog):
 
     async def loop_callback(self) -> None:
         self.logger.debug("Checking TestFlight app statuses")
-        setting = self.settings.watched_apps
-        for app_id in setting.value:
+        watched_apps: list[str] = cast(list[str], self.settings.watched_apps.value)
+        for app_id in watched_apps:
             app_info = await self.fetch_app_info(app_id)
             if app_info is None:
+                if self.settings.send_errors.value:
+                    await self.send_error(app_id)
                 continue
-            if not self.fresh_start and app_info.is_full != self.was_full(app_id):
+            if not self.fresh_start and (app_info.is_full != self.was_full(app_id)):
                 await self.send_info(app_info)
             self.store_app_info(app_info)
 
@@ -90,8 +93,19 @@ class TestFlightNotifier(HTTPModuleCog):
         )
         await channel.send(embed=embed)
 
+    async def send_error(self, app_id: str) -> None:
+        channel = (
+            self.bot.get_channel(self.settings.notification_channel_id.value)
+            or await self.bot.fetch_channel(self.settings.notification_channel_id.value)
+        )
+        if channel is None:
+            self.logger.error("Notification channel not found")
+            return
+
+        await channel.send(f"Failed to fetch app info for app `{app_id}`")
 
     async def fetch_app_info(self, app_id: str) -> TestFlightApp | None:
+        assert self.session is not None, "HTTP session not initialized"
         async with self.session.get(
             f"https://testflight.apple.com/join/{app_id}",
             headers=HEADERS,

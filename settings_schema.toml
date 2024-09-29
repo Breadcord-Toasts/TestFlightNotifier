@@ -3,3 +3,5 @@ check_interval = 1.0
 
 watched_apps = []
 notification_channel_id = 0
+
+send_errors = true
