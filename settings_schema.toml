@@ -5,3 +5,6 @@ watched_apps = []
 notification_channel_id = 0
 
 send_errors = true
+
+unfilled_message = ""
+filled_message = ""

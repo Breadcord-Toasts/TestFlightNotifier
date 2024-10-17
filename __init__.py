@@ -91,7 +91,13 @@ class TestFlightNotifier(HTTPModuleCog):
             )
             .set_thumbnail(url=app_info.icon_url)
         )
-        await channel.send(embed=embed)
+        await channel.send(
+            embed=embed,
+            content=cast(
+                str,
+                self.settings.filled_message.value if app_info.is_full else self.settings.unfilled_message.value
+            ) or None
+        )
 
     async def send_error(self, app_id: str) -> None:
         channel = (
